@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Services;
+using Services.Interfaces;
 
 namespace Web.API.Controllers
 {
@@ -9,11 +11,11 @@ namespace Web.API.Controllers
     [ApiController]
     public class DemoEmailController : ControllerBase
     {
-        private readonly TaskmatesDbContext _dbContext;
+        private readonly IDemoEmailListService _demoEmailListService;
 
-        public DemoEmailController(TaskmatesDbContext dbContext)
+        public DemoEmailController(IDemoEmailListService demoEmailListService)
         {
-            _dbContext = dbContext;
+            _demoEmailListService = demoEmailListService;
         }
 
         [HttpGet]
@@ -21,14 +23,14 @@ namespace Web.API.Controllers
         {
             try
             {
-                var list = await _dbContext.DemoEmailLists.ToListAsync();
+                var emailList = await _demoEmailListService.GetAllAsync();
 
-                if (list.Count > 0)
+                if (emailList == null)
                 {
-                    return Ok(list);
+                    return BadRequest();
                 }
 
-                return BadRequest();
+                return Ok(emailList);                
             }
             catch (Exception ex)
             {
