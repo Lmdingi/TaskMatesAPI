@@ -22,16 +22,6 @@ builder.Logging.AddSerilog(logger);
 
 builder.Services.AddControllers();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("MyCors", builder =>
-    {
-        builder.WithOrigins("http://localhost:4200/")
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-    });
-});
-
 builder.Services.AddDbContext<TaskmatesDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("dbConnection"));
@@ -49,6 +39,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
+
+app.UseCors(options =>
+{
+    options.AllowAnyHeader();
+    options.AllowAnyOrigin();
+    options.AllowAnyMethod();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
